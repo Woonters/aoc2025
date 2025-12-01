@@ -4,6 +4,7 @@ use crate::template::run_multi::run_multi;
 use crate::template::timings::Timings;
 use crate::template::{Day, all_days, readme_benchmarks};
 
+#[allow(clippy::missing_panics_doc)]
 pub fn handle(day: Option<Day>, run_all: bool, store: bool) {
     let stored_timings = Timings::read_from_file();
 

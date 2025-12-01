@@ -2,6 +2,7 @@ use std::process::{Command, Stdio};
 
 use crate::template::Day;
 
+#[allow(clippy::missing_panics_doc)]
 pub fn handle(day: Day, release: bool, dhat: bool, submit_part: Option<u8>) {
     let mut cmd_args = vec!["run".to_string(), "--bin".to_string(), day.to_string()];
 

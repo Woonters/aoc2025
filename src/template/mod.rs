@@ -17,6 +17,7 @@ pub const ANSI_RESET: &str = "\x1b[0m";
 
 /// Helper function that reads a text file to a string.
 #[must_use]
+#[allow(clippy::missing_panics_doc)]
 pub fn read_file(folder: &str, day: Day) -> String {
     let cwd = env::current_dir().unwrap();
     let filepath = cwd.join("data").join(folder).join(format!("{day}.txt"));
@@ -26,6 +27,7 @@ pub fn read_file(folder: &str, day: Day) -> String {
 
 /// Helper function that reads a text file to string, appending a part suffix. E.g. like `01-2.txt`.
 #[must_use]
+#[allow(clippy::missing_panics_doc)]
 pub fn read_file_part(folder: &str, day: Day, part: u8) -> String {
     let cwd = env::current_dir().unwrap();
     let filepath = cwd

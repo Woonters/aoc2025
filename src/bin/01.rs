@@ -28,6 +28,7 @@ mod parser_day1 {
     }
 }
 
+#[must_use]
 pub fn part_one(input: &str) -> Option<u64> {
     let turns: Vec<isize> = parser_day1::parse_input(input);
     let mut ticker = 50;
@@ -41,6 +42,7 @@ pub fn part_one(input: &str) -> Option<u64> {
     Some(counter)
 }
 
+#[must_use]
 pub fn part_two(input: &str) -> Option<u64> {
     let turns: Vec<isize> = parser_day1::parse_input(input);
     let mut ticker = 50;
@@ -56,11 +58,10 @@ pub fn part_two(input: &str) -> Option<u64> {
                 counter += ticker / 100;
                 ticker %= 100;
             }
-            _ => {
-                continue;
-            }
+            _ => {}
         }
     }
+    #[allow(clippy::cast_sign_loss)] // with well-formed inputs, this should always be positive
     Some(counter as u64)
 }
 

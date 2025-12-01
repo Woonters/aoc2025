@@ -1,0 +1,7 @@
+[jobs.clippy-all]
+command = [
+	"cargo", "clippy",
+	"--",
+	"-W", "clippy::pedantic"
+]
+need_stdout = false

@@ -1,3 +1,4 @@
+#![allow(clippy::must_use_candidate)]
 use std::error::Error;
 use std::fmt::Display;
 use std::str::FromStr;
