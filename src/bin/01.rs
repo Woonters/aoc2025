@@ -47,18 +47,27 @@ pub fn part_two(input: &str) -> Option<u64> {
     let turns: Vec<isize> = parser_day1::parse_input(input);
     let mut ticker = 50;
     let mut counter = 0;
+    let mut was_0 = -1;
     for turn in turns {
         ticker += turn;
         match ticker {
-            ..=0 => {
-                counter -= (ticker / 100) - 1;
-                ticker = 100 + (ticker % 100);
+            0 => {
+                counter += 1;
+            }
+            ..=-1 => {
+                counter -= (ticker / 100) + was_0;
+                ticker = (100 + (ticker % 100)) % 100;
             }
             100.. => {
                 counter += ticker / 100;
                 ticker %= 100;
             }
             _ => {}
+        }
+        if ticker == 0 {
+            was_0 = 0;
+        } else {
+            was_0 = -1;
         }
     }
     #[allow(clippy::cast_sign_loss)] // with well-formed inputs, this should always be positive
@@ -72,12 +81,12 @@ mod tests {
     #[test]
     fn test_part_one() {
         let result = part_one(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(3));
     }
 
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(6));
     }
 }
