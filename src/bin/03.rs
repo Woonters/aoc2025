@@ -73,7 +73,41 @@ pub fn part_one(input: &str) -> Option<u64> {
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
-    None
+    let mut total: u64 = 0;
+    let banks = parser_day3::parse_input(input);
+    for bank in banks {
+        let mut start = 0;
+        let mut end = bank.batteries.len() - 12;
+        let mut digits = Vec::with_capacity(12);
+        for _ in 0..12 {
+            let (value, index) = check_slice(&bank.batteries[start..=end]);
+            start += index + 1;
+            end += 1;
+            digits.push(value);
+        }
+        total += digits
+            .iter()
+            .rev()
+            .enumerate()
+            .map(|(i, v)| (*v as u64) * 10_u64.pow(i as u32))
+            .sum::<u64>();
+    }
+    Some(total)
+}
+
+fn check_slice(input: &[u8]) -> (u8, usize) {
+    let mut index = 0;
+    let mut max = 0;
+    for (i, v) in input.iter().enumerate() {
+        if *v == 9 {
+            return (9, i);
+        }
+        if *v > max {
+            max = *v;
+            index = i;
+        }
+    }
+    (max, index)
 }
 
 #[cfg(test)]
@@ -89,6 +123,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(3121910778619));
     }
 }
