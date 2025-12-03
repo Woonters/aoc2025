@@ -34,6 +34,7 @@ mod parser_day2 {
     }
 }
 
+#[must_use]
 pub fn part_one(input: &str) -> Option<usize> {
     let ranges: Vec<Range> = parser_day2::parse_input(input);
     let mut valid_nums: Vec<usize> = Vec::new();
@@ -49,6 +50,8 @@ pub fn part_one(input: &str) -> Option<usize> {
     Some(valid_nums.iter().sum())
 }
 
+#[must_use]
+#[allow(clippy::missing_panics_doc)]
 pub fn part_two(input: &str) -> Option<usize> {
     let ranges: Vec<Range> = parser_day2::parse_input(input);
     let mut valid_nums: Vec<usize> = Vec::new();
