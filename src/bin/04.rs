@@ -63,37 +63,65 @@ fn helper(map: &Map, column: usize, row: usize, i: isize, j: isize) -> Option<u8
     })
 }
 
-fn helper2(map: &mut Map) -> usize {
-    // for each @ symbol grab all the surrounding elements
-    let mut positions: Vec<(usize, usize)> = Vec::new();
-    for (column, data) in map.iter().enumerate() {
-        for (row, character) in data.iter().enumerate() {
+type RollData = Option<(usize, Vec<usize>)>;
+
+// if there is an @ at the space we are searching, return the y and x coords
+fn check_space(map: &Map, column: usize, row: usize, i: isize, j: isize) -> Option<(usize, usize)> {
+    let y: usize = usize::try_from(isize::try_from(column).ok()? + i).ok()?;
+    let x: usize = usize::try_from(isize::try_from(row).ok()? + j).ok()?;
+    map.get(y)
+        .is_some_and(|row_data| row_data.get(x).is_some_and(|c| *c == '@'))
+        .then_some((y, x))
+}
+
+fn generate_cleaned_map(map: &Map) -> Vec<RollData> {
+    let major: usize = map.first().unwrap().len();
+    let mut out: Vec<RollData> = vec![None; map.len() * major];
+
+    for (y, row) in map.iter().enumerate() {
+        for (x, character) in row.iter().enumerate() {
             if *character == '@' {
-                let mut surrounding: u8 = 0;
+                let mut connected: Vec<usize> = Vec::new();
                 for i in -1_isize..=1 {
                     for j in -1_isize..=1 {
-                        surrounding += helper(map, column, row, i, j).unwrap_or(0)
+                        if let Some(coords) = check_space(map, y, x, i, j) {
+                            connected.push((major * coords.0) + coords.1);
+                        }
                     }
                 }
-                if surrounding <= 4 {
-                    positions.push((column, row));
-                }
+                out[(y * major) + x] = Some((connected.len(), connected));
             }
         }
     }
-    for pos in &positions {
-        map[pos.0][pos.1] = '.';
-    }
-    positions.len()
+    out
 }
 
 pub fn part_two(input: &str) -> Option<usize> {
-    let mut map: Map = parser_day4::parse_input(input);
+    let map: Map = parser_day4::parse_input(input);
+    let mut cleaned_map: Vec<RollData> = generate_cleaned_map(&map);
     let mut counter = 0;
     loop {
-        match helper2(&mut map) {
-            0 => return Some(counter),
-            x => counter += x,
+        let reductions: Vec<&Option<(usize, Vec<usize>)>> = cleaned_map
+            .iter()
+            .filter(|position| {
+                position
+                    .as_ref()
+                    .is_some_and(|(surrounding, _)| *surrounding <= 4)
+            })
+            .collect();
+        if reductions.is_empty() {
+            return Some(counter);
+        }
+        counter += reductions.len();
+        let reduction_targets = reductions
+            .iter()
+            .flat_map(|position| position.as_ref().unwrap().1.clone())
+            .collect::<Vec<usize>>();
+
+        for reduction in reduction_targets {
+            if let Some((value, _)) = &mut cleaned_map[reduction] {
+                *value -= 1;
+            }
         }
     }
 }
