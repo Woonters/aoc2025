@@ -17,7 +17,17 @@ mod parser_day3 {
     }
 
     pub fn parse_input(mut input: &str) -> Vec<Bank> {
-        splitter(&mut input).unwrap()
+        // splitter(&mut input).unwrap()
+        other_splitter(input)
+    }
+
+    fn other_splitter(input: &str) -> Vec<Bank> {
+        input
+            .lines()
+            .map(|l| Bank {
+                batteries: l.as_bytes().iter().map(|x| x - 0x30).collect(),
+            })
+            .collect()
     }
 
     fn splitter(input: &mut &str) -> Result<Vec<Bank>, ErrMode<ContextError>> {
@@ -37,9 +47,51 @@ mod parser_day3 {
 }
 
 // Rayon seems to just slow down each of these, which is a bit of a shame
+//
 
-#[must_use]
+// pub fn part_one_optimised(input: &str) -> Option<u64> {
 pub fn part_one(input: &str) -> Option<u64> {
+    Some(
+        input
+            .lines()
+            .map(|l| {
+                let batteries: Vec<u8> = l.bytes().map(|b| b - 0x30).collect();
+                let mut start = 0;
+                let mut bits: [u8; 2] = [0; 2];
+                for i in (0..2).rev() {
+                    let (val, new_index) = check_slice(&batteries[start..=batteries.len() - i - 1]);
+                    start += new_index;
+                    bits[1 - i] = val;
+                }
+                bits.iter().enumerate().fold(0u64, |acc, (i, v)| {
+                    acc + (u64::from(*v) * 10u64.pow(u32::try_from(i).unwrap()))
+                })
+            })
+            .sum(),
+    )
+}
+pub fn part_two_new_but_slow(input: &str) -> Option<u64> {
+    Some(
+        input
+            .lines()
+            .map(|l| {
+                let batteries: Vec<u8> = l.bytes().map(|b| b - 0x30).collect();
+                let mut start = 0;
+                let mut bits: [u8; 12] = [0u8; 12];
+                for i in (0..12).rev() {
+                    let (val, new_index) = check_slice(&batteries[start..=batteries.len() - i - 1]);
+                    start += new_index;
+                    bits[11 - i] = val;
+                }
+                bits.iter().enumerate().fold(0u64, |acc, (i, v)| {
+                    acc + (u64::from(*v) * 10u64.pow(u32::try_from(i).unwrap()))
+                })
+            })
+            .sum(),
+    )
+}
+
+pub fn part_one_old(input: &str) -> Option<u64> {
     // find the highest number (if we find a 9 we should switch to second part)
     let mut total = 0;
     let banks = parser_day3::parse_input(input);
