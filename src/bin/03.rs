@@ -50,7 +50,7 @@ mod parser_day3 {
 //
 
 // pub fn part_one_optimised(input: &str) -> Option<u64> {
-pub fn part_one(input: &str) -> Option<u64> {
+pub fn part_one_wrong(input: &str) -> Option<u64> {
     Some(
         input
             .lines()
@@ -91,7 +91,7 @@ pub fn part_two_new_but_slow(input: &str) -> Option<u64> {
     )
 }
 
-pub fn part_one_old(input: &str) -> Option<u64> {
+pub fn part_one(input: &str) -> Option<u64> {
     // find the highest number (if we find a 9 we should switch to second part)
     let mut total = 0;
     let banks = parser_day3::parse_input(input);

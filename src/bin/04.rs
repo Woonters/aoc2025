@@ -101,9 +101,10 @@ pub fn part_two(input: &str) -> Option<usize> {
     let mut cleaned_map: Vec<RollData> = generate_cleaned_map(&map);
     let mut counter = 0;
     loop {
-        let reductions: Vec<&Option<(usize, Vec<usize>)>> = cleaned_map
+        let reductions: Vec<(usize, &Option<(usize, Vec<usize>)>)> = cleaned_map
             .iter()
-            .filter(|position| {
+            .enumerate()
+            .filter(|(_, position)| {
                 position
                     .as_ref()
                     .is_some_and(|(surrounding, _)| *surrounding <= 4)
@@ -115,8 +116,11 @@ pub fn part_two(input: &str) -> Option<usize> {
         counter += reductions.len();
         let reduction_targets = reductions
             .iter()
-            .flat_map(|position| position.as_ref().unwrap().1.clone())
+            .flat_map(|(_, position)| position.as_ref().unwrap().1.clone())
             .collect::<Vec<usize>>();
+        for removed in reductions.iter().map(|(i, _)| *i).collect::<Vec<usize>>() {
+            cleaned_map[removed] = None;
+        }
 
         for reduction in reduction_targets {
             if let Some((value, _)) = &mut cleaned_map[reduction] {
